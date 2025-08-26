@@ -1,23 +1,12 @@
 const {sql} = require('../config/db')
 const bcrypt = require('bcrypt')
 
+const {checkUserExists, validateUserData } = require('../utils/validations')
+
 class UserMethods {
    async getAllUsers() {
       try {
-         const users = await sql`SELECT * FROM users`
-         return users
-      } catch (error) {
-         console.error('Error listing users', error)
-         throw error
-      }
-   }
-
-   async getUserById(user_id) {
-      try {
-         const users = await sql`
-            SELECT * FROM users
-            WHERE id = ${user_id}
-         `
+         const users = await sql`SELECT id, username, first_name, last_name, email, created_at, updated_at FROM users`
          return users
       } catch (error) {
          console.error('Error listing users', error)
@@ -26,28 +15,13 @@ class UserMethods {
    }
 
    async postUser(data) {
-
       const { username, first_name, last_name, email, password } = data
-      
-      if (!username || !first_name || !last_name || !email || !password) {
-      throw new Error('username, first_name, last_name, email and password are required')
-      }
-
       try {
+         validateUserData(data)
+
          const hashedPassword = await bcrypt.hash(password, 10)
 
-         const userExists = await sql`
-            SELECT username, email
-            FROM users
-            WHERE username = ${username} OR email = ${email}
-         `
-
-         if(userExists.length > 0) {
-            const conflicts = []
-            if(userExists[0].username === username) conflicts.push('username')
-            if(userExists[0].email === email) conflicts.push('email')
-            throw new Error(`${conflicts.join(' and ')} is already used`)
-         }
+         await checkUserExists(username, email)
 
          const [user] = await sql`
             INSERT INTO users (username, first_name, last_name, email, password)
