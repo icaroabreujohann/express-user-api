@@ -2,8 +2,6 @@ const {sql} = require('../config/db')
 const ERROR_CODES = require('./errorCodes')
 const {createError} = require('./createMessages')
 
-const REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'email', 'password']
-
 async function checkUserExists(username, email){
    const userExists = await sql`
       SELECT username, email from users
@@ -23,9 +21,16 @@ async function checkUserExists(username, email){
       )
    }
 }
+function validateLoginData(data) {
+   return validateUserData(data, ['email', 'password'])
+}
 
-function validateUserData(data) {
-   const missingFields = REQUIRED_FIELDS.filter(field => !data[field])
+function validateRegisterData(data) {
+   return validateUserData(data, ['username', 'first_name', 'last_name', 'email', 'password'])
+}
+
+function validateUserData(data, type) {
+   const missingFields = requiredFields.filter(field => !data[field])
 
    if (missingFields.length > 0) {
       throw createError(
@@ -37,4 +42,4 @@ function validateUserData(data) {
   }
 }
 
-module.exports = {checkUserExists, validateUserData}
+module.exports = {checkUserExists, validateUserData, validateLoginData, validateRegisterData}

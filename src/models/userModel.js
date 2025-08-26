@@ -1,7 +1,7 @@
 const {sql} = require('../config/db')
 const bcrypt = require('bcrypt')
 
-const {checkUserExists, validateUserData } = require('../utils/validations')
+const {checkUserExists, validateLoginData, validateRegisterData } = require('../utils/validations')
 
 class UserMethods {
    async getAllUsers() {
@@ -14,7 +14,7 @@ class UserMethods {
       }
    }
 
-   async getUserByEmail(email) {
+   async loginUser(email, password) {
       try {
          const user = await sql`
             SELECT * FROM users
@@ -43,7 +43,7 @@ class UserMethods {
    async postUser(data) {
       const { username, first_name, last_name, email, password } = data
       try {
-         validateUserData(data)
+         validateRegisterData(data)
 
          const hashedPassword = await bcrypt.hash(password, 10)
 

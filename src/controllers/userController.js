@@ -2,17 +2,17 @@ require('dotenv').config()
 const {UserMethods} = require('../models/userModel')
 const userModel = new UserMethods()
 
-const { validateUserData } = require('../utils/validations')
+const { validateRegisterData, validateLoginData } = require('../utils/validations')
 const { createSuccess } = require('../utils/createMessages')
 const SUCCESS_CODES = require('../utils/successCodes')
 const ERROR_CODES = require('../utils/errorCodes')
 
 module.exports = (app) => {
-   app.post('/users/register', async (req, res) => {
+   app.post('/auth/register', async (req, res) => {
       const data = req.body
 
       try {
-         validateUserData(data)
+         validateRegisterData(data)
          const response = await userModel.postUser(data)
 
          res.status(201).json(
@@ -31,6 +31,15 @@ module.exports = (app) => {
             code: error.code || ERROR_CODES.INTERNAL_ERROR.code,
             key: error.key || ERROR_CODES.INTERNAL_ERROR.key,
          })
+      }
+   })
+
+   app.post('/auth/login', async (req, res) => {
+      const data = req.body
+      try {
+         validateLoginData(data)
+      } catch (error) {
+         
       }
    })
 }
