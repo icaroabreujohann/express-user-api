@@ -14,6 +14,32 @@ class UserMethods {
       }
    }
 
+   async getUserByEmail(email) {
+      try {
+         const user = await sql`
+            SELECT * FROM users
+            WHERE email = ${email}
+         `
+         return user
+      } catch (error) {
+         console.error('Error listing users', error)
+         throw error
+      }
+   }
+
+   async getUserById(user_id) {
+      try {
+         const user = await sql`
+            SELECT * FROM users
+            WHERE id = ${user_id}
+         `
+         return user
+      } catch (error) {
+         console.error('Error listing users', error)
+         throw error
+      }
+   }
+
    async postUser(data) {
       const { username, first_name, last_name, email, password } = data
       try {
