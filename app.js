@@ -6,11 +6,11 @@ const port = 3001
 const { testConnectionDb } = require('./src/config/db')
 
 //Middlewares
-
 app.use(express.json())
 app.use(cors())
 
 //Requires
+require('./src/controllers/userController')(app)
 
 const startApi = async () => {
    try {

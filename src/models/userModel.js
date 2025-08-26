@@ -42,4 +42,4 @@ class UserMethods {
    }
 }
 
-module.exports = UserMethods
+module.exports = {UserMethods}
