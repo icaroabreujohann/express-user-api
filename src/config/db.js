@@ -12,6 +12,4 @@ const testConnectionDb = async () => {
    }
 }
 
-testConnectionDb()
-
 module.exports = {sql, testConnectionDb}
