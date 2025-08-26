@@ -2,6 +2,29 @@ const {sql} = require('../config/db')
 const bcrypt = require('bcrypt')
 
 class UserMethods {
+   async getAllUsers() {
+      try {
+         const users = await sql`SELECT * FROM users`
+         return users
+      } catch (error) {
+         console.error('Error listing users', error)
+         throw error
+      }
+   }
+
+   async getUserById(user_id) {
+      try {
+         const users = await sql`
+            SELECT * FROM users
+            WHERE id = ${user_id}
+         `
+         return users
+      } catch (error) {
+         console.error('Error listing users', error)
+         throw error
+      }
+   }
+
    async postUser(data) {
 
       const { username, first_name, last_name, email, password } = data
@@ -37,7 +60,7 @@ class UserMethods {
             )
             RETURNING *
          `
-         return { message: 'User created', user: user }
+         return user
       } catch (error) {
          console.error('Error to create user', error)
          throw error
