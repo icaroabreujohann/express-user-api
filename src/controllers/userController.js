@@ -70,7 +70,7 @@ module.exports = (app) => {
 
    app.get('/auth/me', async (req, res) => {
       try {
-         res.status(201).json(
+         res.status(200).json(
             createSuccess(
                SUCCESS_CODES.USER_AUTHORIZED.message,
                {user: req.user},
