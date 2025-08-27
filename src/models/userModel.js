@@ -84,7 +84,8 @@ class UserMethods {
             )
             RETURNING *
          `
-         return user
+         const { password: _,...userWithoutPassword } = user
+         return userWithoutPassword
       } catch (error) {
          console.error('Error to create user', error)
          throw error
