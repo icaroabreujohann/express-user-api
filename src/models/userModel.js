@@ -2,6 +2,8 @@ const {sql} = require('../config/db')
 const bcrypt = require('bcrypt')
 
 const {checkUserExists, validateLoginData, validateRegisterData } = require('../utils/validations')
+const { createError } = require('../utils/createMessages')
+const ERROR_CODES = require('../utils/errorCodes')
 
 class UserMethods {
    async getAllUsers() {
@@ -14,13 +16,35 @@ class UserMethods {
       }
    }
 
-   async loginUser(email, password) {
+   async authenticateUser(data) {
+      const {email, password} = data
       try {
-         const user = await sql`
+         const [user] = await sql`
             SELECT * FROM users
             WHERE email = ${email}
          `
-         return user
+         if(!user) {
+            throw createError(
+               ERROR_CODES.USER_NOT_FOUND.message,
+               {field: "email"},
+               ERROR_CODES.USER_NOT_FOUND.code,
+               ERROR_CODES.USER_NOT_FOUND.key
+            )
+         }
+
+         const isValid = await bcrypt.compare(password, user.password)
+         if(!isValid) {
+            throw createError(
+               ERROR_CODES.INVALID_CREDENTIALS.message,
+               {field: "password"},
+               ERROR_CODES.INVALID_CREDENTIALS.code,
+               ERROR_CODES.INVALID_CREDENTIALS.key
+            )
+         }
+
+         const { password: _,...userWithoutPassword } = user
+         return userWithoutPassword
+
       } catch (error) {
          console.error('Error listing users', error)
          throw error
@@ -40,7 +64,7 @@ class UserMethods {
       }
    }
 
-   async postUser(data) {
+   async registerUser(data) {
       const { username, first_name, last_name, email, password } = data
       try {
          validateRegisterData(data)

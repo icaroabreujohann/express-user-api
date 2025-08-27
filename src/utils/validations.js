@@ -29,7 +29,7 @@ function validateRegisterData(data) {
    return validateUserData(data, ['username', 'first_name', 'last_name', 'email', 'password'])
 }
 
-function validateUserData(data, type) {
+function validateUserData(data, requiredFields) {
    const missingFields = requiredFields.filter(field => !data[field])
 
    if (missingFields.length > 0) {
